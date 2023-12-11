@@ -95,7 +95,7 @@ class MyApp(CTk):
         self.state('zoomed')
 
     def label_button_frame_event(self, item):
-        logging.info(f"{item.to_json()}\n")
+        logging.info(f"{item}\n")
         self.frame_row1_col2.set_data(item)
 
     def fill_scrollable_frame(self):
@@ -124,7 +124,7 @@ class MyApp(CTk):
         webtoon = self.frame_row1_col2.get_data()
         print_str = f"Performing 'Download' action with data: {webtoon}\n"
         logging.warning(print_str)
-        # download_webtoon(webtoon)
+        download_webtoon(webtoon)
 
     def perform_update(self):
         # Get data from entries and perform "Update" action
