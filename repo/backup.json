@@ -1,0 +1,29 @@
+[
+    {
+        "__class__": "ReaperScans",
+        "__module__": "webscrappers.ReaperScans",
+        "starting_url": "https://reapercomics.com/comics/5150-sss-class-suicide-hunter/chapters/78951193-chapter-1",
+        "current_chapter": 1,
+        "folder_path": "D:/Webtoons/SSS-Class Suicide Hunter",
+        "name": "SSS-Class Suicide Hunter",
+        "icon_path": "../assets\\ReaperScans.png"
+    },
+    {
+        "__class__": "AsuraScans",
+        "__module__": "webscrappers.AsuraScans",
+        "starting_url": "https://asuratoon.com/0258791518-the-greatest-estate-developer-chapter-1/",
+        "current_chapter": 1,
+        "folder_path": "D:/Webtoons/The Greatest Estate Developer",
+        "name": "The Greatest Estate Developer",
+        "icon_path": "../assets\\AsuraScans.png"
+    },
+    {
+        "__class__": "FlameScans",
+        "__module__": "webscrappers.FlameScans",
+        "starting_url": "https://flamecomics.com/omniscient-readers-viewpoint-chapter-0-prolouge/",
+        "current_chapter": 1,
+        "folder_path": "D:/Webtoons/Omniscient Reader’s Viewpoint",
+        "name": "Omniscient Reader’s Viewpoint",
+        "icon_path": "../assets\\FlameScans.png"
+    }
+]
