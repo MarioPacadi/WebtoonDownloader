@@ -6,6 +6,8 @@ import darkdetect
 
 from Models.CustomLogging import CustomLogging
 
+# logging.basicConfig(level=CustomLogging.TRACE.value, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 class DualLoggerHandler(logging.Handler):
 
@@ -19,6 +21,7 @@ class DualLoggerHandler(logging.Handler):
 
         # Create tags for different log levels
         CustomLogging.add_tags_to_widget(self.text)
+        logging.basicConfig(level=CustomLogging.TRACE.value, format='%(asctime)s - %(levelname)s - %(message)s')
 
     def emit(self, record):
         msg = self.format(record)

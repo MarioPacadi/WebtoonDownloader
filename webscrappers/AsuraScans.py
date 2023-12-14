@@ -3,8 +3,6 @@ import logging
 
 from Models.WebtoonDownloader import WebtoonsDownloader
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
 
 class AsuraScans(WebtoonsDownloader):
 
@@ -42,6 +40,6 @@ class AsuraScans(WebtoonsDownloader):
 
 if __name__ == '__main__':
     downloader = AsuraScans(
-        "https://asuratoon.com/8223257861-the-greatest-estate-developer-chapter-105/", "The Greatest Estate Developer")
+        starting_url="https://asuratoon.com/8223257861-the-greatest-estate-developer-chapter-105/", name="The Greatest Estate Developer")
     downloader.current_chapter = 105
     downloader.start_downloading()

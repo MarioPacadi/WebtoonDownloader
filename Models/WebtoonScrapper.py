@@ -2,13 +2,10 @@ from uuid import UUID
 
 from view.utils.FileManager import import_classes_from_directory_of_subclass_webtoons_downloader, \
     file_exists_in_directory
-from webscrappers.AsuraScans import AsuraScans
-from webscrappers.FlameScans import FlameScans
-from webscrappers.MangaDemon import MangaDemon
-from webscrappers.ReaperScans import ReaperScans
 
-scrapper_directory_path = '../webscrappers'
-images_directory_path = '../assets'
+scrapper_directory_path = './webscrappers'
+images_directory_path = './assets'
+placeholder_img_path = './assets/ScraperPlaceholder.png'
 
 
 def get_all_webtoon_scrappers():
@@ -18,7 +15,7 @@ def get_all_webtoon_scrappers():
 
 def get_icon_by_scrapper_name(scrapper_name) -> str:
     image_exists = file_exists_in_directory(images_directory_path, scrapper_name)
-    return '../assets/ScraperPlaceholder.png' if not image_exists else image_exists
+    return placeholder_img_path if not image_exists else image_exists
 
 
 def get_webtoon_downloader(id_webtoon: UUID, webscrapper: str, name: str, url: str, save_to: str):

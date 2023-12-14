@@ -25,7 +25,7 @@ class MyApp(CTk):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.title("Webtoon Downloader")
-        icon = PhotoImage(file="../assets/Logo.png")
+        icon = PhotoImage(file="./assets/Logo.png")
         self.wm_iconbitmap()
         self.iconphoto(True, icon)
 

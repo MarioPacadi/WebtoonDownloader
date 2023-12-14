@@ -1,9 +1,7 @@
-import logging
 import threading
 import time
 
 from alive_progress import alive_bar
-
 
 lock = threading.Lock()
 should_stop = threading.Event()

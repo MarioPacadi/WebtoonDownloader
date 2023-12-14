@@ -1,12 +1,13 @@
 import io
+import json
 import logging
 import os
 import time
 import uuid
+import requests
+
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
-
-import requests
 from PIL import Image
 from dataclasses_json import dataclass_json
 from selenium import webdriver
@@ -15,11 +16,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
 from Models.LoadingBar import start_loading, done_loading
 from Models.CustomLogging import CustomLogging
+from Models.Settings import Settings
 
-logging.basicConfig(level=CustomLogging.TRACE.value, format='%(asctime)s - %(levelname)s - %(message)s')
+# logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 
 @dataclass_json
@@ -36,9 +38,9 @@ class WebtoonsDownloader(ABC):
                  id_webtoon: uuid.UUID = uuid.uuid4(),
                  starting_url: str = "",
                  folder_path: str = "",
-                 current_chapter=1,
+                 current_chapter: int = 1,
                  name: str = "",
-                 icon_path: str = "../assets/ScraperPlaceholder.png"):
+                 icon_path: str = "./assets/ScraperPlaceholder.png"):
         self.id_webtoon = id_webtoon
         self.starting_url = starting_url
         self.current_chapter = current_chapter
@@ -49,38 +51,53 @@ class WebtoonsDownloader(ABC):
     def start_downloading(self):
         next_url = self.starting_url
         while next_url:
-            html_content = self._download_html(next_url)
-            image_links, next_url, folder_name = self._parse_html(html_content)
-            os.makedirs(os.path.join(self.folder_path, folder_name), exist_ok=True)
-            logging.info(f"Currently processing: {folder_name}")
-            self._download_images(image_links, self.folder_path, folder_name)
-            if next_url:
-                logging.info(f"Moving to \"{next_url}\"")
-            else:
-                logging.info(f"Webtoon download complete. Total chapters downloaded: {self.current_chapter}")
-            self.current_chapter += 1
+            try:
+                html_content = self._download_html(next_url)
+                image_links, next_url, folder_name = self._parse_html(html_content)
+                os.makedirs(os.path.join(self.folder_path, folder_name), exist_ok=True)
+                logging.info(f"Currently processing: {folder_name}")
+                self._download_images(image_links, self.folder_path, folder_name)
+                if next_url:
+                    logging.info(f"Moving to \"{next_url}\"")
+                else:
+                    logging.info(f"Webtoon download complete. Total chapters downloaded: {self.current_chapter}")
+                self.current_chapter += 1
+            except Exception as e:
+                logging.error(e)
 
+    # Chromedriver download site: https://googlechromelabs.github.io/chrome-for-testing/#stable
+    # npx @puppeteer/browsers install chrome@stable
     @staticmethod
     def _download_html(url):
-        start_loading("Downloading HTML")
-        driver_path = "D:/Program Files (x86)/chromedriver-win64/chromedriver.exe"
-        brave_path = r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
+        html_content = ""
+        try:
+            start_loading("Downloading HTML")
+            with open("./repo/settings.json", 'r+', encoding='utf-8') as f:
+                json_str = json.load(f)
+            settings = Settings.from_json(json_str)
 
-        options = Options()
-        options.binary_location = brave_path
-        options.add_argument("--headless")  # Run Chrome in headless mode
-        options.add_argument("--incognito")  # Run Chrome in incognito mode
-        options.add_argument(
-            "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Brave/9085")  # Add user-agent to the options
-        chrome_driver_path = driver_path  # Replace with the actual path to chromedriver
-        service = Service(chrome_driver_path)
-        with webdriver.Chrome(service=service, options=options) as driver:
-            driver.get(url)
-            # Wait for all images to load before getting the page source
-            WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.TAG_NAME, 'img')))
-            time.sleep(2)  # Wait for 2 seconds to ensure all images are loaded
-            html_content = driver.page_source
-        done_loading()
+            options = Options()
+            options.binary_location = settings.browser_path
+            options.add_argument("--headless")  # Run Chrome in headless mode
+
+            if settings.run_in_incognito:
+                options.add_argument("--incognito")  # Run Chrome in incognito mode
+
+            options.add_argument(
+                f"--user-agent={settings.user_agent}")  # Add user-agent to the options
+            chrome_driver_path = settings.driver_path  # Replace with the actual path to chromedriver
+            service = Service(chrome_driver_path)
+            with webdriver.Chrome(service=service, options=options) as driver:
+                driver.get(url)
+                # Wait for all images to load before getting the page source
+                WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.TAG_NAME, 'img')))
+                time.sleep(2)  # Wait for 2 seconds to ensure all images are loaded
+                html_content = driver.page_source
+            done_loading()
+        except Exception as e:
+            done_loading()
+            logging.error(e)
+
         return html_content
 
     @abstractmethod

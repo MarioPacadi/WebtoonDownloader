@@ -1,12 +1,12 @@
-from webscrappers.ReaperScans import ReaperScans
+from Models.Settings import Settings
+from view.utils.FileManager import write_to_json_file
 
 
 if __name__ == '__main__':
-    downloader = ReaperScans(
-        "https://reapercomics.com/comics/5150-sss-class-suicide-hunter/chapters/14091450-chapter-105",
-        "D:/Webtoons/SSS-Class Suicide Hunter")  # Replace with actual URL
-    jsonStr = downloader.to_json()
+    settings = Settings()
+    jsonStr = settings.to_json()
     print(jsonStr)
-    tester = ReaperScans.from_json(jsonStr)
+    tester = Settings.from_json(jsonStr)
     print(tester)
+    write_to_json_file(data=jsonStr, filename="../repo/settings.json")
 

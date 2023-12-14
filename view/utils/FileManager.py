@@ -105,12 +105,3 @@ def read_from_json_file(filename='data.json', decoder=None):
 def write_to_json_file(data, filename='data.json', encoder=None):
     with open(filename, 'w+', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4, cls=encoder)
-
-    # with open(filename, 'w+') as file:
-    #     # First we load existing data into a dict.
-    #     file_data = json.load(file)
-    #     file_data.append(new_data)
-    #     # Sets file's current position at offset.
-    #     file.seek(0)
-    #     # convert back to json.
-    #     json.dump(file_data, file, indent=4)

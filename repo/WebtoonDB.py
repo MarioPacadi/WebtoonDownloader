@@ -1,8 +1,9 @@
 from Models.WebtoonDownloader import WebtoonsDownloader
 from view.utils.FileManager import read_from_json_file, write_to_json_file
-from view.utils.WebtoonEncoder import webtoons_list_decoder, WebtoonsListEncoder, webtoon_decoder, WebtoonEncoder
+from view.utils.WebtoonEncoder import webtoon_decoder, WebtoonEncoder
 
-json_db_path = "../repo/webtoon_list.json"
+json_db_path = "./repo/webtoon_list.json"
+json_settings_path = "./repo/settings.json"
 
 
 def add_data_to_json_file(data: list, filename='data.json', decoder=webtoon_decoder, encoder=WebtoonEncoder):
