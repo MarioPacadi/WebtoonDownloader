@@ -22,16 +22,6 @@
     {
         "__class__": "FlameScans",
         "__module__": "webscrappers.FlameScans",
-        "id_webtoon": "377dec12-739a-4a4a-8e86-9cb6606c5008",
-        "starting_url": "https://flamecomics.com/omniscient-readers-viewpoint-chapter-0-prolouge/",
-        "current_chapter": 1,
-        "folder_path": "D:/Webtoons/Omniscient Reader’s Viewpoint",
-        "name": "Omniscient Reader’s Viewpoint",
-        "icon_path": "./assets\\FlameScans.png"
-    },
-    {
-        "__class__": "FlameScans",
-        "__module__": "webscrappers.FlameScans",
         "id_webtoon": "445ef68c-f9a4-4df9-abf0-e586fcfd8158",
         "starting_url": "https://flamecomics.com/hero-has-returned-chapter-1/",
         "current_chapter": 1,
@@ -43,10 +33,70 @@
         "__class__": "FlameComics",
         "__module__": "webscrappers.FlameComics",
         "id_webtoon": "377dec12-739a-4a4a-8e86-9cb6606c5008",
-        "starting_url": "\"https://flamecomics.com/omniscient-readers-viewpoint-chapter-184/",
+        "starting_url": "https://flamecomics.com/solo-leveling-chapter-146/",
+        "current_chapter": 1,
+        "folder_path": "D:/Webtoons/Solo Leveling",
+        "name": "Solo Leveling",
+        "icon_path": "./assets\\FlameComics.png"
+    },
+    {
+        "__class__": "MangaDemon",
+        "__module__": "webscrappers.MangaDemon",
+        "id_webtoon": "377dec35-739a-4a4a-8e86-9cb6606c6666",
+        "starting_url": "https://demontoon.com/manga/Adventures-of-an-Undead-Who-Became-Paladin/chapter/0-VA48",
+        "current_chapter": 1,
+        "folder_path": "D:/Webtoons/Adventures of an Undead Who Became Paladin",
+        "name": "Adventures of an Undead Who Became Paladin",
+        "icon_path": "./assets\\MangaDemon.png"
+    },
+    {
+        "__class__": "Rizzcomic",
+        "__module__": "webscrappers.Rizzcomic",
+        "id_webtoon": "51dc7280-451e-4ab5-a4bb-52a46034def8",
+        "starting_url": "https://rizzcomic.com/chapter/r2311170-transcension-academy-chapter-0",
+        "current_chapter": 1,
+        "folder_path": "D:/Webtoons/Transcension Academy",
+        "name": "Transcension Academy",
+        "icon_path": "./assets\\rizzcomic.png"
+    },
+    {
+        "__class__": "FlameComics",
+        "__module__": "webscrappers.FlameComics",
+        "id_webtoon": "53c6c4e4-d1ba-456e-8ebe-6064fc87f5b3",
+        "starting_url": "https://flamecomics.me/omniscient-readers-viewpoint-chapter-193/",
         "current_chapter": 1,
         "folder_path": "D:/Webtoons/Omniscient Reader’s Viewpoint",
         "name": "Omniscient Reader’s Viewpoint",
-        "icon_path": "./assets\\FlameScans.png"
+        "icon_path": "./assets\\FlameComics.png"
+    },
+    {
+        "__class__": "AsuraScans",
+        "__module__": "webscrappers.AsuraScans",
+        "id_webtoon": "377dec35-739a-4a4a-8e86-9cb6606c6666",
+        "starting_url": "https://asuracomic.net/series/the-s-classes-that-i-raised-40558280/chapter/1",
+        "current_chapter": 1,
+        "folder_path": "D:/Webtoons/The S-Classes That I Raised",
+        "name": "The S-Classes That I Raised",
+        "icon_path": "./assets\\AsuraScans.png"
+    },
+    {
+        "__class__": "DisneyLorcana",
+        "__module__": "webscrappers.DisneyLorcana",
+        "id_webtoon": "377dec35-739a-4a4a-8e86-9cb6606c6666",
+        "starting_url": "https://lorcania.com/cards",
+        "current_chapter": 1,
+        "folder_path": "D:/Card Games/Disney Lorcana Cards Library",
+        "name": "DisneyLorcana",
+        "icon_path": "./assets/DisneyLorcana.png"
+    },
+    {
+        "__class__": "ZabavaBalkan",
+        "__module__": "webscrappers.ZabavaBalkan",
+        "id_webtoon": "620746be-78bd-40b2-9f38-180a920e6e14",
+        "starting_url": "https://zabavabalkan.website/alan-ford-stripovi.html",
+        "current_chapter": 1,
+        "folder_path": "D:/Stripovi/AlanFord",
+        "name": "Alan Ford",
+        "icon_path": "./assets/Alan Ford.png"
     }
 ]

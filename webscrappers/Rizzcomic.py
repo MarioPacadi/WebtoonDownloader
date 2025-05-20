@@ -7,7 +7,7 @@ from Models.LoadingBar import done_loading, start_loading
 from Models.WebtoonDownloader import WebtoonsDownloader
 
 
-class FlameComics(WebtoonsDownloader):
+class Rizzcomic(WebtoonsDownloader):
 
     def _parse_html(self, html_content):
         try:
@@ -17,8 +17,10 @@ class FlameComics(WebtoonsDownloader):
             folder_element = soup.find('h1', class_='entry-title')
             if folder_element:
                 chap = folder_element.get_text().strip()
-                chap = self.clean_string(chap)
-                folder_name = self._clean_folder_name(chap)
+                chap = self._clean_folder_name(chap)
+                folder_name = self.clean_string(chap)
+
+                print(folder_name)
             else:
                 folder_name = f"Chapter{str(self.current_chapter).zfill(2)}"
 
@@ -57,9 +59,3 @@ class FlameComics(WebtoonsDownloader):
             return match.group()
         else:
             return input_string
-
-# if __name__ == '__main__':
-#     downloader = FlameComics(
-#         starting_url="https://flamecomics.com/hero-has-returned-chapter-3/", name="Hero has returned")
-#     downloader.current_chapter = 3
-#     downloader.start_downloading()

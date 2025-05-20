@@ -10,12 +10,12 @@ class AsuraScans(WebtoonsDownloader):
         try:
             soup = BeautifulSoup(html_content, 'html.parser')
 
-            folder_element = soup.find('div', class_='headpost').find('h1')
+            folder_element = soup.find('div', class_='headpost').find('h2')
             if folder_element:
-                chap = folder_element.get_text().strip().replace("The Greatest Estate Developer ", "")
+                chap = folder_element.get_text().strip().replace(f"{self.name} ", "")
                 folder_name = self._clean_folder_name(chap)
             else:
-                folder_name = f"Chapter{str(self.current_chapter).zfill(2)}"
+                folder_name = f"Chapter {str(self.current_chapter).zfill(2)}"
 
             div_el = soup.find('div', class_='rdminimal')
             if div_el:
@@ -26,7 +26,8 @@ class AsuraScans(WebtoonsDownloader):
             else:
                 image_links = []
 
-            next_url = None
+            next_url = self._find_next_url(soup, "ch-next-btn")
+
             a_tag = soup.find('a', class_="ch-next-btn")
             if a_tag:
                 if 'Next' in a_tag.get_text():

@@ -1,12 +1,16 @@
+import atexit
 import logging
 import threading
+import time
 from tkinter import PhotoImage
 
 import customtkinter as ctk
 from customtkinter import CTk
+from selenium.webdriver.chrome.webdriver import WebDriver
 
 from Models import WebtoonDownloader
 from Models.CustomLogging import CustomLogging
+
 from Models.WebtoonScrapper import get_icon_by_scrapper_name
 from repo import WebtoonDB
 from repo.WebtoonDB import add_data_to_json_file, update_data_of_json_file
@@ -14,11 +18,19 @@ from view.components.ScrollableLabelButtonFrame import ScrollableLabelButtonFram
 from view.components.WebtoonForm import WebtoonForm
 from view.utils.CropToCircle import crop_to_circle
 from view.utils.handlers.DualLoggerHandler import DualLoggerHandler
-
+from view.utils.validation.AspectValidation import validate_webtoon
+import Models.Constants as Constants
 
 def download_webtoon(webtoon: WebtoonDownloader):
     background_thread = threading.Thread(target=webtoon.start_downloading, args=[])
+    background_thread.daemon = True
     background_thread.start()
+
+
+def cleanup():
+    Constants.global_driver.close()
+    time.sleep(1)
+    print("Performing cleanup before exiting...")
 
 
 class MyApp(CTk):
@@ -28,6 +40,7 @@ class MyApp(CTk):
         icon = PhotoImage(file="./assets/Logo.png")
         self.wm_iconbitmap()
         self.iconphoto(True, icon)
+        self.iconbitmap("./assets/Logo.ico")
 
         # First row
         label_webtoon_list = ctk.CTkLabel(self, text="Webtoon list", font=("Helvetica", 16, "bold"))
@@ -63,17 +76,18 @@ class MyApp(CTk):
         # Widgets for the first row, column 1 (WebtoonForm)
 
         # Widgets for the second row (Logs window)
-        logs_text = ctk.CTkTextbox(self.frame_row2, wrap="word", height=10, width=80, state='disabled', pady=10, padx=10)
+        logs_text = ctk.CTkTextbox(self.frame_row2, wrap="word", height=10, width=80, state='disabled', pady=10,
+                                   padx=10)
         logs_text.grid(row=0, column=0, sticky="nsew")
 
         # Set up logging
         # Create textLogger
         text_handler = DualLoggerHandler(logs_text)
 
-        # Logging configuration
-        logging.basicConfig(filename='test.log',
-                            level=logging.INFO,
-                            format='%(asctime)s - %(levelname)s - %(message)s')
+        # # Logging configuration
+        # logging.basicConfig(filename='test.log',
+        #                     level=logging.INFO,
+        #                     format='%(asctime)s - %(levelname)s - %(message)s')
 
         # Add the handler to logger
         logger = logging.getLogger()
@@ -95,7 +109,7 @@ class MyApp(CTk):
         self.state('zoomed')
 
     def label_button_frame_event(self, item):
-        logging.info(f"{item}\n")
+        logging.info(f"Getting info of: {item}\n")
         self.frame_row1_col2.set_data(item)
 
     def fill_scrollable_frame(self):
@@ -110,6 +124,7 @@ class MyApp(CTk):
                 size=(64, 64)))
 
     # Button Actions
+    @validate_webtoon
     def perform_add(self):
         # Get data from entries and perform "Add" action
         webtoon = self.frame_row1_col2.get_data()
@@ -119,6 +134,7 @@ class MyApp(CTk):
         add_data_to_json_file(data=[webtoon], filename=WebtoonDB.json_db_path)
         self.fill_scrollable_frame()
 
+    @validate_webtoon
     def perform_download(self):
         # Get data from entries and perform "Download" action
         webtoon = self.frame_row1_col2.get_data()
@@ -126,6 +142,7 @@ class MyApp(CTk):
         logging.warning(print_str)
         download_webtoon(webtoon)
 
+    @validate_webtoon
     def perform_update(self):
         # Get data from entries and perform "Update" action
         webtoon = self.frame_row1_col2.get_data()
@@ -139,3 +156,4 @@ if __name__ == "__main__":
     CustomLogging.add_custom_levels()
     app = MyApp()
     app.mainloop()
+    atexit.register(cleanup)

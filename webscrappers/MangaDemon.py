@@ -25,13 +25,15 @@ class MangaDemon(WebtoonsDownloader):
             # Extracting image links from the div with style attribute "overflow-x:hidden;max-width: 100%;"
             section_el = soup.find('section', class_='page-in content-wrap')
             if section_el:
-                image_links = [img['src'] for img in section_el.find_all('img') if
+                image_links = [img['src'] for img in section_el.find_all('img', class_='imgholder') if
                                self._is_valid_image_link(img.get('src'))]
+                # image_links = [img['src'] for img in section_el.find_all('img') if
+                #                self._is_valid_image_link(img.get('src'))]
             else:
                 image_links = []
 
             # Adding the base URL to the incomplete next_url
-            base_url = "https://manga-demon.org"
+            base_url = "https://demontoon.com"
             next_url = None
             for a_tag in soup.find_all('a', class_='nextchap'):
                 url = str(a_tag.get('href', ''))

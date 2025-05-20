@@ -18,18 +18,35 @@ def get_icon_by_scrapper_name(scrapper_name) -> str:
     return placeholder_img_path if not image_exists else image_exists
 
 
-def get_webtoon_downloader(id_webtoon: UUID, webscrapper: str, name: str, url: str, save_to: str):
+def get_icon_by_name(*names):
+    """Searches for the first existing icon file among a set of names.
+
+  Args:
+    *names (str...): A variable number of potential icon filenames.
+
+  Returns:
+    str: The path to the first existing icon file, or a placeholder path if none are found.
+  """
+
+    for name in names:
+        image_exists = file_exists_in_directory(images_directory_path, name)
+        if image_exists:
+            return image_exists
+
+    return placeholder_img_path
+
+
+def get_webtoon_downloader(id_webtoon: str, webscrapper: str, name: str, url: str, save_to: str):
     all_class_instances = import_classes_from_directory_of_subclass_webtoons_downloader(scrapper_directory_path)
-    print(webscrapper.lower())
     for instance in all_class_instances:
         scrapper_name = instance.__class__.__name__
-        print(scrapper_name.lower())
+        # print(scrapper_name.lower())
         if webscrapper.lower() == scrapper_name.lower():
             instance.id_webtoon = id_webtoon
             instance.name = name
             instance.starting_url = url
             instance.folder_path = save_to
-            instance.icon_path = get_icon_by_scrapper_name(scrapper_name)
+            instance.icon_path = get_icon_by_name(name, scrapper_name)
             return instance
 
     return None

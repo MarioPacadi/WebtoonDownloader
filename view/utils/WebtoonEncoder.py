@@ -1,8 +1,6 @@
 import importlib
 import json
 
-from Models.WebtoonDownloader import WebtoonsDownloader
-
 
 class WebtoonEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -44,3 +42,15 @@ def webtoons_list_decoder(obj):
         # Deserialize the list of objects
         return [webtoon_decoder(item) for item in obj]
     return obj
+
+
+# if __name__ == '__main__':
+#     webtoon_list = WebtoonDB.read_data_from_json_file(
+#         filename="webtoon_list.json")
+#     new_webtoon = FlameComics(starting_url="https://flamecomics.me/omniscient-readers-viewpoint-chapter-193/",
+#                               name="Omniscient Reader’s Viewpoint")
+#     webtoon_list.append(new_webtoon)
+#     print(webtoon_list)
+#     WebtoonDB.write_to_json_file(webtoon_list,
+#                                  filename="test_list.json",
+#                                  encoder=WebtoonEncoder)

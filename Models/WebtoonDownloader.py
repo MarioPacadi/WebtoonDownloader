@@ -4,30 +4,31 @@ import logging
 import os
 import time
 import uuid
-import requests
-
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
+from pathlib import Path
+from typing import List
+
+import requests
 from PIL import Image
+from bs4 import BeautifulSoup
 from dataclasses_json import dataclass_json
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from Models.LoadingBar import start_loading, done_loading
+from selenium.webdriver.support.ui import WebDriverWait
+
 from Models.CustomLogging import CustomLogging
+from Models.LoadingBar import start_loading, done_loading
 from Models.Settings import Settings
-
-# logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
-
+import Models.Constants as Constants
 
 
 @dataclass_json
 @dataclass
 class WebtoonsDownloader(ABC):
-    id_webtoon: uuid.UUID
+    id_webtoon: str
     starting_url: str
     current_chapter: int
     folder_path: str
@@ -35,7 +36,7 @@ class WebtoonsDownloader(ABC):
     icon_path: str
 
     def __init__(self,
-                 id_webtoon: uuid.UUID = uuid.uuid4(),
+                 id_webtoon: str = str(uuid.uuid4()),
                  starting_url: str = "",
                  folder_path: str = "",
                  current_chapter: int = 1,
@@ -54,7 +55,10 @@ class WebtoonsDownloader(ABC):
             try:
                 html_content = self._download_html(next_url)
                 image_links, next_url, folder_name = self._parse_html(html_content)
-                os.makedirs(os.path.join(self.folder_path, folder_name), exist_ok=True)
+
+                full_folder_path = os.path.join(self.folder_path, folder_name)
+                if not os.path.exists(full_folder_path):
+                    os.makedirs(full_folder_path, exist_ok=True)
                 logging.info(f"Currently processing: {folder_name}")
                 self._download_images(image_links, self.folder_path, folder_name)
                 if next_url:
@@ -67,8 +71,8 @@ class WebtoonsDownloader(ABC):
 
     # Chromedriver download site: https://googlechromelabs.github.io/chrome-for-testing/#stable
     # npx @puppeteer/browsers install chrome@stable
-    @staticmethod
-    def _download_html(url):
+
+    def _download_html(self, url):
         html_content = ""
         try:
             start_loading("Downloading HTML")
@@ -76,29 +80,43 @@ class WebtoonsDownloader(ABC):
                 json_str = json.load(f)
             settings = Settings.from_json(json_str)
 
-            options = Options()
+            options = webdriver.ChromeOptions()
             options.binary_location = settings.browser_path
-            options.add_argument("--headless")  # Run Chrome in headless mode
-
+            # options.add_argument("--headless=new")  # Run Chrome in headless mode
+            options.add_argument("--disable-extensions")
+            options.add_argument("--disable-dev-shm-usage")
+            options.add_argument("--no-sandbox")
             if settings.run_in_incognito:
                 options.add_argument("--incognito")  # Run Chrome in incognito mode
 
-            options.add_argument(
-                f"--user-agent={settings.user_agent}")  # Add user-agent to the options
-            chrome_driver_path = settings.driver_path  # Replace with the actual path to chromedriver
-            service = Service(chrome_driver_path)
-            with webdriver.Chrome(service=service, options=options) as driver:
-                driver.get(url)
-                # Wait for all images to load before getting the page source
-                WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.TAG_NAME, 'img')))
-                time.sleep(2)  # Wait for 2 seconds to ensure all images are loaded
-                html_content = driver.page_source
+            options.add_argument(f"--user-agent={settings.user_agent}")  # Add user-agent to the options
+
+            logging.info(f"Getting html from: {url}")
+            # service = Service(executable_path=ChromeDriverManager(chrome_type=ChromeType.BRAVE).install())
+            # service = Service(executable_path=settings.driver_path)
+
+            Constants.global_driver = webdriver.Chrome(options=options)
+            # with webdriver.Chrome(options=options) as driver:
+            #     driver.get(url)
+            #     self._execute_user_simulated_interaction(driver)
+            #     html_content = driver.page_source
+
+            Constants.global_driver.get(url)
+            self._execute_user_simulated_interaction(Constants.global_driver)
+            html_content = Constants.global_driver.page_source
+            Constants.global_driver.close()
+            # driver.close()
             done_loading()
         except Exception as e:
             done_loading()
             logging.error(e)
 
         return html_content
+
+    def _execute_user_simulated_interaction(self, driver):
+        # Wait for all images to load before getting the page source
+        WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.TAG_NAME, 'img')))
+        time.sleep(2)  # Wait for 2 seconds to ensure all images are loaded
 
     @abstractmethod
     def _parse_html(self, html_content):
@@ -107,7 +125,7 @@ class WebtoonsDownloader(ABC):
     @staticmethod
     def _download_images(image_links, parent_folder, folder_name):
         if not image_links:
-            logging.warning("No images found for this chapter.")
+            logging.log(logging.WARNING, "No images found for this chapter.")
             return
 
         for idx, link in enumerate(image_links):
@@ -115,7 +133,7 @@ class WebtoonsDownloader(ABC):
             file_path = os.path.join(parent_folder, folder_name, image_name)
 
             if os.path.exists(file_path):
-                logging.warning(f"Image \"{image_name}\" already exists. Skipping download.")
+                logging.log(logging.WARNING, f"Image \"{image_name}\" already exists. Skipping download.")
                 continue
 
             with requests.get(link) as r:
@@ -136,6 +154,7 @@ class WebtoonsDownloader(ABC):
     def _clean_folder_name(folder_name):
         # Folders must not use symbols \/:*?"<>|
         folder_name = folder_name.strip().replace(":", " -")
+        folder_name = folder_name.strip().replace("\n", " ")
         replacements = ['\\', "/", "*", "?", "<", ">", "|"]
         for replacement in replacements:
             folder_name = folder_name.strip().replace(replacement, "")
@@ -156,13 +175,22 @@ class WebtoonsDownloader(ABC):
         try:
             with requests.get(link) as r:
                 if int(r.headers['Content-length']) <= 0:
-                    logging.error(rf"Corrupted image found at: {link}")
+                    logging.log(logging.ERROR, rf"Corrupted image found at: {link}")
                     return True
 
             return False
         except (IOError, SyntaxError) as e:
-            logging.error(rf"Corrupted image found at: {link} - {e}")
+            logging.log(logging.ERROR, rf"Corrupted image found at: {link} - {e}")
             return True
+
+    def _find_next_url(self, soup: BeautifulSoup, class_name: str) -> str | None:
+        a_tag = soup.find('a', class_=class_name)
+        if a_tag:
+            url = a_tag['href'] if 'Next' in a_tag.get_text() else "None"
+            if url.startswith("http"):
+                return url
+
+        return None
 
     def __str__(self):
         return self.name

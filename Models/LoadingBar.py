@@ -37,5 +37,6 @@ def loading_bar(steps, message):
 
 def start_loading(message, steps=100):
     thread = threading.Thread(target=loading_bar, args=(steps, message))
+    thread.daemon = True
     thread.start()
     return thread

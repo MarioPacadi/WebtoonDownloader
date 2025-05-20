@@ -1,0 +1,7 @@
+*.pyc
+/view/utils/__pycache__
+/view/utils/__pycache__
+/webscrappers/__pycache__
+/Models/__pycache__
+/webscrappers/__pycache__
+Models/__pycache__/WebtoonScrapper.cpython-311.pyc
